@@ -6,13 +6,13 @@ use JmvDevelop\Domain\Exception\UnhandledException;
 
 class ChainHandler implements HandlerInterface
 {
-    /** @var HandlerInterface[] */
-    private array $handlers;
+    /** @var list<HandlerInterface> */
+    private iterable $handlers;
 
-    /** @param HandlerInterface[] $handlers */
-    public function __construct(array $handlers)
+    /** @param \Traversable<array-key, HandlerInterface> $handlers */
+    public function __construct(\Traversable $handlers)
     {
-        $this->handlers = $handlers;
+        $this->handlers = array_values(iterator_to_array($handlers));
     }
 
     public function addHandler(HandlerInterface $handler): self

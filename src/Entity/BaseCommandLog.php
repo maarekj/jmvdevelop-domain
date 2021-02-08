@@ -96,6 +96,7 @@ abstract class BaseCommandLog implements CommandLogInterface
         }
     }
 
+    /** @return array<string, BaseCommandLog::TYPE_*> */
     public static function getChoicesForType(): array
     {
         return [
@@ -168,6 +169,7 @@ abstract class BaseCommandLog implements CommandLogInterface
     {
         $this->commandData = $commandData;
 
+        /** @psalm-suppress MixedAssignment */
         $message = isset($this->commandData['__command_message__']) ? $this->commandData['__command_message__'] : null;
         $this->setMessage($message === null ? null : (string)$message);
     }

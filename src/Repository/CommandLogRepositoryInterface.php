@@ -3,6 +3,7 @@
 namespace JmvDevelop\Domain\Repository;
 
 use JmvDevelop\Domain\CommandInterface;
+use JmvDevelop\Domain\Entity\BaseCommandLog;
 use JmvDevelop\Domain\Entity\CommandLogInterface;
 
 /**
@@ -16,6 +17,6 @@ interface CommandLogRepositoryInterface
     /** @return string[] */
     public function getChoicesForCommandClass(): array;
 
-    /** @return string[] */
+    /** @return array<string, BaseCommandLog::TYPE_*> */
     public function getChoicesForType(): array;
 }

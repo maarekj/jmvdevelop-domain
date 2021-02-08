@@ -27,7 +27,7 @@ class LoggerUtils
         $this->expressionLanguage = new ExpressionLanguage($cacheAdapter, [$languageProvider]);
     }
 
-    public function logCommand(mixed $command): array
+    public function logCommand(object $command): array
     {
         $class = new \ReflectionClass($command);
         $array = [];
@@ -40,22 +40,28 @@ class LoggerUtils
             $logCollectionFieldsAnnot = $this->annotationReader->getPropertyAnnotation($property, LogCollectionFields::class);
 
             if (null !== $logFieldsAnnot) {
+                /** @psalm-suppress MixedAssignment */
                 $object = $this->getValue($command, $property);
                 if (null === $object) {
                     $array[$property->getName()] = null;
-                } else {
+                } elseif (is_object($object)) {
                     $array[$property->getName()] = $this->logFields($object, $logFieldsAnnot->fields);
                 }
             } elseif (null !== $logCollectionFieldsAnnot) {
+                /** @psalm-suppress MixedAssignment */
                 $collection = $this->getValue($command, $property);
                 $row = [];
-                if (null !== $collection) {
+                if (null !== $collection && ($collection instanceof \Traversable || is_array($collection))) {
+                    /** @psalm-suppress MixedAssignment */
                     foreach ($collection as $object) {
-                        $row[] = $this->logFields($object, $logCollectionFieldsAnnot->fields);
+                        if (is_array($object) || is_object($object)) {
+                            $row[] = $this->logFields($object, $logCollectionFieldsAnnot->fields);
+                        }
                     }
                 }
                 $array[$property->getName()] = $row;
             } else {
+                /** @psalm-suppress MixedAssignment */
                 $array[$property->getName()] = $this->logValue($command, $property);
             }
         }
@@ -63,7 +69,7 @@ class LoggerUtils
         $logMessageAnnot = $this->annotationReader->getClassAnnotation($class, LogMessage::class);
         if (null !== $logMessageAnnot) {
             try {
-                $array['__command_message__'] = $this->expressionLanguage->evaluate($logMessageAnnot->expression, [
+                $array['__command_message__'] = (string)$this->expressionLanguage->evaluate($logMessageAnnot->expression, [
                     'o' => $command,
                 ]);
             } catch (\Exception $e) {
@@ -88,30 +94,25 @@ class LoggerUtils
     }
 
     /**
-     * @param mixed $object
      * @param string[] $fields
      *
-     * @return array<string, scalar>
+     * @return array
      */
-    protected function logFields($object, array $fields): array
+    protected function logFields(array|object $object, array $fields): array
     {
         $array = [];
 
         foreach ($fields as $field) {
+            /** @psalm-suppress MixedAssignment */
             $array[$field] = $this->logValue($object, $field);
         }
 
         return $array;
     }
 
-    /**
-     * @param mixed $object
-     * @param string|\ReflectionProperty $property
-     *
-     * @return mixed
-     */
-    protected function logValue($object, $property)
+    protected function logValue(array|object $object, string|\ReflectionProperty $property): mixed
     {
+        /** @psalm-suppress MixedAssignment */
         $value = $this->getValue($object, $property);
         $json = \json_encode($value);
 
@@ -122,13 +123,7 @@ class LoggerUtils
         return $value;
     }
 
-    /**
-     * @param mixed $object
-     * @param string|\ReflectionProperty $property
-     *
-     * @return mixed
-     */
-    protected function getValue($object, $property)
+    protected function getValue(array|object $object, string|\ReflectionProperty $property): mixed
     {
         $property = \is_string($property) ? $property : $property->getName();
 

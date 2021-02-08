@@ -67,11 +67,17 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         $results = $qb->getQuery()->getScalarResult();
 
         return \array_values(\array_map(function (array $row): string {
-            return $row['commandClass'] ?? "";
+            /** @psalm-suppress MixedAssignment */
+            $value = $row['commandClass'] ?? null;
+            if ($value === null || !is_string($value)) {
+                return "";
+            } else {
+                return $value;
+            }
         }, $results));
     }
 
-    /** @return string[] */
+    /** @return array<string, BaseCommandLog::TYPE_*> */
     public function getChoicesForType(): array
     {
         return BaseCommandLog::getChoicesForType();

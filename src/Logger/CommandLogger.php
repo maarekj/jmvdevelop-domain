@@ -35,6 +35,7 @@ class CommandLogger implements CommandLoggerInterface
         if (null == $annotation) {
             $logger = $this->loggerFallback;
         } else {
+            /** @psalm-suppress MixedAssignment */
             $logger = $this->container->get($annotation->service);
             if (!($logger instanceof CommandLoggerInterface)) {
                 throw new \InvalidArgumentException(\sprintf('"%s" must be implement %s', $annotation->service, CommandLoggerInterface::class));
