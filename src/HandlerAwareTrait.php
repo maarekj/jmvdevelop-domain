@@ -6,7 +6,7 @@ trait HandlerAwareTrait
 {
     protected HandlerInterface $domainHandler;
 
-    public function setDomainHandler(HandlerInterface $domainHandler)
+    public function setDomainHandler(HandlerInterface $domainHandler): void
     {
         $this->domainHandler = $domainHandler;
     }
