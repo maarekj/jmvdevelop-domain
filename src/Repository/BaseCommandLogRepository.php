@@ -2,7 +2,7 @@
 
 namespace JmvDevelop\Domain\Repository;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use JmvDevelop\Domain\CommandInterface;
 use JmvDevelop\Domain\CommandLoggerInterface;
@@ -21,14 +21,14 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
     protected ?string $uniqueId = null;
 
     public function __construct(
-        private EntityManager $manager,
+        EntityManagerInterface $manager,
         string $entityClass,
         private CommandLoggerInterface $commandLogger,
         private RequestStack $requestStack,
         private TokenStorageInterface $tokenStorage
     )
     {
-        parent::__construct($this->manager, $this->manager->getClassMetadata($entityClass));
+        parent::__construct($manager, $manager->getClassMetadata($entityClass));
         $this->uniqueId = null;
     }
 
