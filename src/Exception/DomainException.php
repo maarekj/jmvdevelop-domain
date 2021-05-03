@@ -10,6 +10,7 @@ if (interface_exists('\\GraphQL\\Error\\ClientAware')) {
     class DomainException extends \RuntimeException implements \GraphQL\Error\ClientAware
     {
         protected bool $clientSafe = true;
+        protected string $category = 'domain';
 
         public function __construct(string $message = '', bool $safe = true, int $code = 0, Throwable $previous = null)
         {
@@ -28,11 +29,24 @@ if (interface_exists('\\GraphQL\\Error\\ClientAware')) {
 
             return $this;
         }
+
+        public function getCategory(): string
+        {
+            return $this->category;
+        }
+
+        public function setCategory(string $category): self
+        {
+            $this->category = $category;
+
+            return $this;
+        }
     }
 } else {
     class DomainException extends \RuntimeException
     {
         protected bool $clientSafe = true;
+        protected string $category = 'domain';
 
         public function __construct(string $message = '', bool $safe = true, int $code = 0, Throwable $previous = null)
         {
@@ -48,6 +62,18 @@ if (interface_exists('\\GraphQL\\Error\\ClientAware')) {
         public function setClientSafe(bool $clientSafe): self
         {
             $this->clientSafe = $clientSafe;
+
+            return $this;
+        }
+
+        public function getCategory(): string
+        {
+            return $this->category;
+        }
+
+        public function setCategory(string $category): self
+        {
+            $this->category = $category;
 
             return $this;
         }
