@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Entity;
 
 use Symfony\Component\HttpFoundation\Request;
 
 interface CommandLogInterface
 {
-    const TYPE_BEFORE_HANDLER = 0;
-    const TYPE_AFTER_HANDLER = 1;
-    const TYPE_EXCEPTION = 2;
+    public const TYPE_BEFORE_HANDLER = 0;
+    public const TYPE_AFTER_HANDLER = 1;
+    public const TYPE_EXCEPTION = 2;
 
     public static function getLabelForType(int $type): string;
 

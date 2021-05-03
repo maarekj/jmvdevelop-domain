@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Utils;
 
+use Doctrine\Common\Annotations\Reader;
 use JmvDevelop\Domain\Logger\Annotation\LogCollectionFields;
 use JmvDevelop\Domain\Logger\Annotation\LogFields;
 use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 use JmvDevelop\Domain\Logger\ExpressionLanguageProvider;
-use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -21,8 +23,7 @@ class LoggerUtils
         private Reader $annotationReader,
         AdapterInterface $cacheAdapter,
         ExpressionLanguageProvider $languageProvider
-    )
-    {
+    ) {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
         $this->expressionLanguage = new ExpressionLanguage($cacheAdapter, [$languageProvider]);
     }
@@ -44,17 +45,17 @@ class LoggerUtils
                 $object = $this->getValue($command, $property);
                 if (null === $object) {
                     $array[$property->getName()] = null;
-                } elseif (is_object($object)) {
+                } elseif (\is_object($object)) {
                     $array[$property->getName()] = $this->logFields($object, $logFieldsAnnot->fields);
                 }
             } elseif (null !== $logCollectionFieldsAnnot) {
                 /** @psalm-suppress MixedAssignment */
                 $collection = $this->getValue($command, $property);
                 $row = [];
-                if (null !== $collection && ($collection instanceof \Traversable || is_array($collection))) {
+                if (null !== $collection && ($collection instanceof \Traversable || \is_array($collection))) {
                     /** @psalm-suppress MixedAssignment */
                     foreach ($collection as $object) {
-                        if (is_array($object) || is_object($object)) {
+                        if (\is_array($object) || \is_object($object)) {
                             $row[] = $this->logFields($object, $logCollectionFieldsAnnot->fields);
                         }
                     }
@@ -69,7 +70,7 @@ class LoggerUtils
         $logMessageAnnot = $this->annotationReader->getClassAnnotation($class, LogMessage::class);
         if (null !== $logMessageAnnot) {
             try {
-                $array['__command_message__'] = (string)$this->expressionLanguage->evaluate($logMessageAnnot->expression, [
+                $array['__command_message__'] = (string) $this->expressionLanguage->evaluate($logMessageAnnot->expression, [
                     'o' => $command,
                 ]);
             } catch (\Exception $e) {
@@ -80,25 +81,22 @@ class LoggerUtils
     }
 
     /**
-     * @param \ReflectionClass $class
      * @return list<\ReflectionProperty>
      */
     protected function getAllProperties(\ReflectionClass $class): array
     {
         $properties = $class->getProperties();
         while ($class = $class->getParentClass()) {
-            $properties = \array_merge([], $properties, $class->getProperties());
+            $properties = array_merge([], $properties, $class->getProperties());
         }
 
-        return \array_values(\array_reverse($properties));
+        return array_values(array_reverse($properties));
     }
 
     /**
      * @param string[] $fields
-     *
-     * @return array
      */
-    protected function logFields(array|object $object, array $fields): array
+    protected function logFields(array | object $object, array $fields): array
     {
         $array = [];
 
@@ -110,20 +108,20 @@ class LoggerUtils
         return $array;
     }
 
-    protected function logValue(array|object $object, string|\ReflectionProperty $property): mixed
+    protected function logValue(array | object $object, string | \ReflectionProperty $property): mixed
     {
         /** @psalm-suppress MixedAssignment */
         $value = $this->getValue($object, $property);
-        $json = \json_encode($value);
+        $json = json_encode($value);
 
-        if ($json === false) {
+        if (false === $json) {
             return null;
         }
 
         return $value;
     }
 
-    protected function getValue(array|object $object, string|\ReflectionProperty $property): mixed
+    protected function getValue(array | object $object, string | \ReflectionProperty $property): mixed
     {
         $property = \is_string($property) ? $property : $property->getName();
 

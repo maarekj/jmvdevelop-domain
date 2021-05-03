@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Repository;
 
 use JmvDevelop\Domain\CommandInterface;

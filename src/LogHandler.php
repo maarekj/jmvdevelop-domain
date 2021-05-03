@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain;
 
+use Doctrine\ORM\EntityManagerInterface;
 use JmvDevelop\Domain\Entity\CommandLogInterface;
 use JmvDevelop\Domain\Logger\CommandLogger;
 use JmvDevelop\Domain\Repository\CommandLogRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
 final class LogHandler implements HandlerInterface
@@ -17,8 +19,7 @@ final class LogHandler implements HandlerInterface
         private LoggerInterface $logger,
         private CommandLogRepositoryInterface $commandLogRepo,
         private CommandLogger $commandLogger
-    )
-    {
+    ) {
     }
 
     public function setDecoratedHandler(?HandlerInterface $decorated): void
@@ -28,9 +29,10 @@ final class LogHandler implements HandlerInterface
 
     public function getDecoratedHandlerOrThrow(): HandlerInterface
     {
-        if ($this->decorated === null) {
-            throw new \RuntimeException("The decorated handler has not to be setted");
+        if (null === $this->decorated) {
+            throw new \RuntimeException('The decorated handler has not to be setted');
         }
+
         return $this->decorated;
     }
 
@@ -51,7 +53,7 @@ final class LogHandler implements HandlerInterface
                 $this->logCommand($command, CommandLogInterface::TYPE_AFTER_HANDLER, $commandLog);
             } catch (\Throwable $e) {
                 $this->logCommand($command, CommandLogInterface::TYPE_EXCEPTION, $commandLog, $e);
-                throw ($e instanceof \Exception ? $e : new \RuntimeException($e->getMessage(), (int)$e->getCode(), $e));
+                throw ($e instanceof \Exception ? $e : new \RuntimeException($e->getMessage(), (int) $e->getCode(), $e));
             }
         }
     }

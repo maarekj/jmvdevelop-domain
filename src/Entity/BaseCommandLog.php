@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -30,6 +32,7 @@ abstract class BaseCommandLog implements CommandLogInterface
 
     /**
      * @ORM\Column(type="integer", nullable=false)
+     *
      * @var ?CommandLogInterface::TYPE_*
      */
     protected ?int $type = null;
@@ -156,7 +159,7 @@ abstract class BaseCommandLog implements CommandLogInterface
 
     public function setMessage(?string $message): void
     {
-        $message = \substr(null !== $message ? $message : '', 0, 1000);
+        $message = substr(null !== $message ? $message : '', 0, 1000);
         $this->message = $message;
     }
 
@@ -170,8 +173,8 @@ abstract class BaseCommandLog implements CommandLogInterface
         $this->commandData = $commandData;
 
         /** @psalm-suppress MixedAssignment */
-        $message = isset($this->commandData['__command_message__']) ? $this->commandData['__command_message__'] : null;
-        $this->setMessage($message === null ? null : (string)$message);
+        $message = $this->commandData['__command_message__'] ?? null;
+        $this->setMessage(null === $message ? null : (string) $message);
     }
 
     public function getCommandClass(): ?string
@@ -264,7 +267,7 @@ abstract class BaseCommandLog implements CommandLogInterface
         $message = $exception->getMessage();
 
         if (null !== $exception->getPrevious()) {
-            $message .= ' ' . self::exceptionFullMessage($exception->getPrevious());
+            $message .= ' '.self::exceptionFullMessage($exception->getPrevious());
         }
 
         return $message;

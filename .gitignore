@@ -2,3 +2,5 @@
 /.phpunit.result.cache
 /vendor
 /.idea
+/bin/.php-cs-fixer
+/.php-cs-fixer.cache

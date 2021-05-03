@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain;
 
 use JmvDevelop\Domain\Exception\UnhandledException;
@@ -38,6 +40,7 @@ class ChainHandler implements HandlerInterface
         foreach ($this->handlers as $handler) {
             if ($handler->acceptCommand($command)) {
                 $handler->handle($command);
+
                 return;
             }
         }

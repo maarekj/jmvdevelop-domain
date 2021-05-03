@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\Common\Annotations\AnnotationReader;
 use JmvDevelop\Domain\Logger\ExpressionLanguageProvider;
 use JmvDevelop\Domain\Tests\Utils\Fixtures\ObjectWithDoubleNested;
@@ -18,7 +20,7 @@ function createLoggerUtils(): LoggerUtils
     );
 }
 
-test("always false", function ($command, $expected) {
+test('always false', function ($command, $expected): void {
     $logger = createLoggerUtils();
 
     expect($logger->logCommand($command))->toEqual($expected);
@@ -37,14 +39,16 @@ test("always false", function ($command, $expected) {
         'simpleObject' => [
             'field1' => 'simple field1',
             'field2' => 'simple field2',
-        ]
+        ],
     ]],
     [new ObjectWithDoubleNested(
         new ObjectWithNested(
             new SimpleObject('simple field1', 'simple field2'),
-            'nested field1', 'nested field2'
+            'nested field1',
+            'nested field2'
         ),
-        'field1', 'field2'
+        'field1',
+        'field2'
     ), [
         '__command_message__' => 'object_with_double_nested',
         'field1' => 'field1',
@@ -57,9 +61,11 @@ test("always false", function ($command, $expected) {
     [new ObjectWithDoubleNested(
         new ObjectWithNested(
             null,
-            'nested field1', 'nested field2'
+            'nested field1',
+            'nested field2'
         ),
-        'field1', 'field2'
+        'field1',
+        'field2'
     ), [
         '__command_message__' => 'object_with_double_nested',
         'field1' => 'field1',
@@ -71,7 +77,8 @@ test("always false", function ($command, $expected) {
     ]],
     [new ObjectWithDoubleNested(
         null,
-        'field1', 'field2'
+        'field1',
+        'field2'
     ), [
         '__command_message__' => 'object_with_double_nested',
         'field1' => 'field1',
@@ -80,7 +87,8 @@ test("always false", function ($command, $expected) {
     ]],
     [new ObjectWithError(
         new ObjectWithNested(null, 'nested field1', 'nested field2'),
-        'field1', 'field2'
+        'field1',
+        'field2'
     ), [
         '__command_message__' => 'object_with_error',
         'field1' => 'field1',
@@ -89,5 +97,5 @@ test("always false", function ($command, $expected) {
             'field1' => 'nested field1',
             'erroronpath.field1' => null,
         ],
-    ]]
+    ]],
 ]);

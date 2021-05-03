@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Logger\Annotation;
 
 /**
@@ -8,5 +10,5 @@ namespace JmvDevelop\Domain\Logger\Annotation;
  */
 class LogMessage
 {
-    public string $expression = "";
+    public string $expression = '';
 }

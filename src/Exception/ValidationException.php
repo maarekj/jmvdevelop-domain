@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -11,9 +13,9 @@ class ValidationException extends DomainException
 
     public function __construct(ConstraintViolationListInterface $violations)
     {
-        $message = \implode("\n", \array_map(function (ConstraintViolationInterface $violation) {
-            return \sprintf('%s: %s', $violation->getPropertyPath(), (string)$violation->getMessage());
-        }, \iterator_to_array($violations)));
+        $message = implode("\n", array_map(function (ConstraintViolationInterface $violation) {
+            return sprintf('%s: %s', $violation->getPropertyPath(), (string) $violation->getMessage());
+        }, iterator_to_array($violations)));
         parent::__construct($message);
 
         $this->violations = $violations;

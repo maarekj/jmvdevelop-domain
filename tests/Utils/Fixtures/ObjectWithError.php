@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Tests\Utils\Fixtures;
 
-use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 use JmvDevelop\Domain\Logger\Annotation\LogFields;
+use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 
 /**
  * @LogMessage(expression="'object_with_error'")

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Utils;
 
 use JmvDevelop\Domain\Exception\ValidationException;
@@ -14,8 +16,7 @@ final class ValidatorUtils
     }
 
     /**
-     * @param mixed $command
-     * @param Constraint|Constraint[] $constraints
+     * @param Constraint|Constraint[]                            $constraints
      * @param string|GroupSequence|(string|GroupSequence)[]|null $group
      */
     public function validateOrThrow(mixed $command, $constraints = null, $group = null): void

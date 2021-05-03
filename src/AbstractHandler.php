@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain;
 
 /**
@@ -15,14 +17,12 @@ abstract class AbstractHandler implements HandlerInterface
      *
      * @param string[]|string $acceptedCommandClasses
      */
-    public function __construct(array|string $acceptedCommandClasses)
+    public function __construct(array | string $acceptedCommandClasses)
     {
-        $this->acceptedCommandClasses = (array)$acceptedCommandClasses;
+        $this->acceptedCommandClasses = (array) $acceptedCommandClasses;
     }
 
     /**
-     * @param CommandInterface $command
-     *
      * @return bool Return true if this handler accept the command
      */
     public function acceptCommand(CommandInterface $command): bool

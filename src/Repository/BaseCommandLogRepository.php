@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JmvDevelop\Domain\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,8 +28,7 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         private CommandLoggerInterface $commandLogger,
         private RequestStack $requestStack,
         private TokenStorageInterface $tokenStorage
-    )
-    {
+    ) {
         parent::__construct($manager, $manager->getClassMetadata($entityClass));
         $this->uniqueId = null;
     }
@@ -51,7 +52,7 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         }
 
         if (null === $this->uniqueId) {
-            $this->uniqueId = \uniqid('request');
+            $this->uniqueId = uniqid('request');
         }
 
         $entity->setRequestId($this->uniqueId);
@@ -66,11 +67,11 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         $qb->select('command_log.commandClass')->distinct();
         $results = $qb->getQuery()->getScalarResult();
 
-        return \array_values(\array_map(function (array $row): string {
+        return array_values(array_map(function (array $row): string {
             /** @psalm-suppress MixedAssignment */
             $value = $row['commandClass'] ?? null;
-            if ($value === null || !is_string($value)) {
-                return "";
+            if (null === $value || !\is_string($value)) {
+                return '';
             } else {
                 return $value;
             }
@@ -91,7 +92,7 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
             if ($user instanceof UserInterface) {
                 return $user->getUsername();
             } else {
-                return (string)$user;
+                return (string) $user;
             }
         }
 
