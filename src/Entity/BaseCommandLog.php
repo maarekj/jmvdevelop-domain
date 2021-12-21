@@ -10,61 +10,61 @@ use Symfony\Component\HttpFoundation\Request;
 #[ORM\MappedSuperclass]
 abstract class BaseCommandLog implements CommandLogInterface
 {
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ORM\OneToOne(targetEntity: CommandLogInterface::class)]
     protected ?CommandLogInterface $previousCommandLog = null;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $sessionId = null;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $requestId = null;
 
     /** @var ?CommandLogInterface::TYPE_* */
-    #[ORM\Column(type: "integer", nullable: false)]
+    #[ORM\Column(type: 'integer', nullable: false)]
     protected ?int $type = null;
 
-    #[ORM\Column(type: "string", length: 1000, nullable: true)]
+    #[ORM\Column(type: 'string', length: 1000, nullable: true)]
     protected ?string $message = null;
 
-    #[ORM\Column(type: "json", nullable: true)]
+    #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $commandData = null;
 
-    #[ORM\Column(type: "string", nullable: false)]
+    #[ORM\Column(type: 'string', nullable: false)]
     protected ?string $commandClass = null;
 
-    #[ORM\Column(type: "json", nullable: true)]
+    #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $request = null;
 
-    #[ORM\Column(type: "string", length: 50, nullable: true)]
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     protected ?string $clientIp = null;
 
-    #[ORM\Column(type: "string", length: 400, nullable: true)]
+    #[ORM\Column(type: 'string', length: 400, nullable: true)]
     protected ?string $pathInfo = null;
 
-    #[ORM\Column(type: "string", length: 400, nullable: true)]
+    #[ORM\Column(type: 'string', length: 400, nullable: true)]
     protected ?string $uri = null;
 
-    #[ORM\Column(type: "string", length: 180, nullable: true)]
+    #[ORM\Column(type: 'string', length: 180, nullable: true)]
     protected ?string $currentUsername = null;
 
-    #[ORM\Column(type: "text", nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $exceptionMessage = null;
 
-    #[ORM\Column(type: "text", nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $exceptionFullMessage = null;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $exceptionClass = null;
 
-    #[ORM\Column(type: "json", nullable: true)]
+    #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $exceptionData = null;
 
-    #[ORM\Column(type: "datetimetz_immutable", nullable: false)]
+    #[ORM\Column(type: 'datetimetz_immutable', nullable: false)]
     protected \DateTimeImmutable $date;
 
     public function __construct()
@@ -165,7 +165,7 @@ abstract class BaseCommandLog implements CommandLogInterface
 
         /** @psalm-suppress MixedAssignment */
         $message = $this->commandData['__command_message__'] ?? null;
-        $this->setMessage(null === $message ? null : (string)$message);
+        $this->setMessage(null === $message ? null : (string) $message);
     }
 
     public function getCommandClass(): ?string
@@ -258,7 +258,7 @@ abstract class BaseCommandLog implements CommandLogInterface
         $message = $exception->getMessage();
 
         if (null !== $exception->getPrevious()) {
-            $message .= ' ' . self::exceptionFullMessage($exception->getPrevious());
+            $message .= ' '.self::exceptionFullMessage($exception->getPrevious());
         }
 
         return $message;

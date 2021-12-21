@@ -44,7 +44,7 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         $entity->setCommandData($this->commandLogger->log($command));
 
         $entity->setCommandClass(\get_class($command));
-        $entity->setRequest($this->requestStack->getMasterRequest());
+        $entity->setRequest($this->requestStack->getMainRequest());
         $entity->setCurrentUsername($this->getCurrentUsername());
 
         if (null !== $exception) {
@@ -90,7 +90,7 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         if (null !== $token) {
             $user = $token->getUser();
             if ($user instanceof UserInterface) {
-                return $user->getUsername();
+                return $user->getUserIdentifier();
             } else {
                 return (string) $user;
             }

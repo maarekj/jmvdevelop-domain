@@ -34,10 +34,7 @@ class LoggerUtils
         $array = [];
 
         foreach ($this->getAllProperties($class) as $property) {
-            /** @var LogFields|null $logFieldsAnnot */
             $logFieldsAnnot = $this->annotationReader->getPropertyAnnotation($property, LogFields::class);
-
-            /** @var LogCollectionFields|null $logCollectionFieldsAnnot */
             $logCollectionFieldsAnnot = $this->annotationReader->getPropertyAnnotation($property, LogCollectionFields::class);
 
             if (null !== $logFieldsAnnot) {
@@ -90,6 +87,7 @@ class LoggerUtils
             $properties = array_merge([], $properties, $class->getProperties());
         }
 
+        /** @psalm-suppress RedundantCast */
         return array_values(array_reverse($properties));
     }
 

@@ -17,8 +17,7 @@ class CommandLogger implements CommandLoggerInterface
         private ContainerInterface $container,
         private Reader $annotationReader,
         private CommandLoggerInterface $loggerFallback
-    )
-    {
+    ) {
     }
 
     public function mustLog(CommandInterface $command): bool
