@@ -9,7 +9,7 @@ use JmvDevelop\Domain\Logger\Annotation\LogCollectionFields;
 use JmvDevelop\Domain\Logger\Annotation\LogFields;
 use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 use JmvDevelop\Domain\Logger\ExpressionLanguageProvider;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -21,7 +21,7 @@ class LoggerUtils
 
     public function __construct(
         private Reader $annotationReader,
-        AdapterInterface $cacheAdapter,
+        CacheItemPoolInterface $cacheAdapter,
         ExpressionLanguageProvider $languageProvider
     ) {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
