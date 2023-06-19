@@ -8,7 +8,7 @@ use JmvDevelop\Domain\Logger\Annotation\LogFields;
 
 class ObjectWithNested
 {
-    /** @LogFields(fields={"field1", "field2"}) */
+    #[LogFields(fields: ['field1', 'field2'])]
     protected ?SimpleObject $simpleObject;
 
     protected string $field1;

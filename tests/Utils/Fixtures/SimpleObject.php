@@ -6,9 +6,7 @@ namespace JmvDevelop\Domain\Tests\Utils\Fixtures;
 
 use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 
-/**
- * @LogMessage(expression="error.onExpression(r) ~ 'error'")
- */
+#[LogMessage(expression: 'error.onExpression(r) ~ "error"')]
 class SimpleObject
 {
     protected ?string $field1;

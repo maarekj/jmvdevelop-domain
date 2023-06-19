@@ -31,12 +31,14 @@ abstract class BaseCommandLog implements CommandLogInterface
     #[ORM\Column(type: 'string', length: 1000, nullable: true)]
     protected ?string $message = null;
 
+    /** @var array<string, mixed>|null */
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $commandData = null;
 
     #[ORM\Column(type: 'string', nullable: false)]
     protected ?string $commandClass = null;
 
+    /** @var array<string, mixed>|null */
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $request = null;
 
@@ -61,6 +63,7 @@ abstract class BaseCommandLog implements CommandLogInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $exceptionClass = null;
 
+    /** @var array<string, mixed>|null */
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $exceptionData = null;
 
@@ -72,9 +75,9 @@ abstract class BaseCommandLog implements CommandLogInterface
         $this->date = new \DateTimeImmutable();
     }
 
-    //------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // region Static
-    //------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
     public static function getLabelForType(int $type): string
     {
@@ -102,9 +105,9 @@ abstract class BaseCommandLog implements CommandLogInterface
 
     // endregion
 
-    //------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // region Getters & Setters
-    //------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
     public function getId(): ?int
     {
@@ -121,7 +124,7 @@ abstract class BaseCommandLog implements CommandLogInterface
         return $this->previousCommandLog;
     }
 
-    public function setPreviousCommandLog(?CommandLogInterface $previousCommandLog = null): void
+    public function setPreviousCommandLog(CommandLogInterface $previousCommandLog = null): void
     {
         $this->previousCommandLog = $previousCommandLog;
     }
@@ -154,18 +157,22 @@ abstract class BaseCommandLog implements CommandLogInterface
         $this->message = $message;
     }
 
+    /** @return array<string, mixed>|null */
     public function getCommandData(): ?array
     {
         return $this->commandData;
     }
 
+    /** @param array<string, mixed>|null $commandData */
     public function setCommandData(?array $commandData): void
     {
         $this->commandData = $commandData;
-
-        /** @psalm-suppress MixedAssignment */
         $message = $this->commandData['__command_message__'] ?? null;
-        $this->setMessage(null === $message ? null : (string) $message);
+        if (\is_string($message)) {
+            $this->setMessage($message);
+        } else {
+            $this->setMessage(null);
+        }
     }
 
     public function getCommandClass(): ?string
@@ -193,12 +200,13 @@ abstract class BaseCommandLog implements CommandLogInterface
         return $this->date;
     }
 
+    /** @return array<string, mixed>|null */
     public function getRequest(): ?array
     {
         return $this->request;
     }
 
-    public function setRequest(?Request $request = null): void
+    public function setRequest(Request $request = null): void
     {
         if (null === $request) {
             $this->request = null;
@@ -248,7 +256,7 @@ abstract class BaseCommandLog implements CommandLogInterface
         } else {
             $this->exceptionMessage = $exception->getMessage();
             $this->exceptionFullMessage = self::exceptionFullMessage($exception);
-            $this->exceptionClass = \get_class($exception);
+            $this->exceptionClass = $exception::class;
             $this->exceptionData = self::exceptionToArray($exception);
         }
     }
@@ -264,10 +272,11 @@ abstract class BaseCommandLog implements CommandLogInterface
         return $message;
     }
 
+    /** @return array<string, mixed> */
     protected static function exceptionToArray(\Throwable $exception): array
     {
         $array = [
-            'exception_class' => \get_class($exception),
+            'exception_class' => $exception::class,
             'code' => $exception->getCode(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
@@ -351,11 +360,13 @@ abstract class BaseCommandLog implements CommandLogInterface
         $this->exceptionClass = $exceptionClass;
     }
 
+    /** @return array<string, mixed>|null */
     public function getExceptionData(): ?array
     {
         return $this->exceptionData;
     }
 
+    /** @param array<string, mixed>|null $exceptionData */
     public function setExceptionData(?array $exceptionData): void
     {
         $this->exceptionData = $exceptionData;

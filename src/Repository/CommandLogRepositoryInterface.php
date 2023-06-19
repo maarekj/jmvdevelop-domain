@@ -14,7 +14,7 @@ use JmvDevelop\Domain\Entity\CommandLogInterface;
 interface CommandLogRepositoryInterface
 {
     /** @param CommandLogInterface::TYPE_* $type */
-    public function createEntity(CommandInterface $command, int $type, ?CommandLogInterface $previousCommandLog = null, ?\Throwable $exception = null): CommandLogInterface;
+    public function createEntity(CommandInterface $command, int $type, CommandLogInterface $previousCommandLog = null, \Throwable $exception = null): CommandLogInterface;
 
     /** @return string[] */
     public function getChoicesForCommandClass(): array;

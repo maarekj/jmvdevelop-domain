@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use JmvDevelop\Domain\Logger\ExpressionLanguageProvider;
 use JmvDevelop\Domain\Tests\Utils\Fixtures\ObjectWithDoubleNested;
 use JmvDevelop\Domain\Tests\Utils\Fixtures\ObjectWithError;
@@ -14,7 +13,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 function createLoggerUtils(): LoggerUtils
 {
     return new LoggerUtils(
-        new AnnotationReader(),
         new ArrayAdapter(),
         new ExpressionLanguageProvider()
     );

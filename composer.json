@@ -3,7 +3,7 @@
   "description": "Provide a commandhandler",
   "type": "library",
   "require": {
-    "php": "^8",
+    "php": "^8.1",
     "doctrine/orm": "^2.8",
     "psr/container": "^1.0",
     "psr/log": "^2.0",
@@ -16,8 +16,8 @@
     "jetbrains/phpstorm-attributes": "^1.0"
   },
   "require-dev": {
-    "vimeo/psalm": "^4.10",
-    "pestphp/pest": "^1.0"
+    "pestphp/pest": "^1.0",
+    "phpstan/phpstan": "^1.10"
   },
   "autoload": {
     "psr-4": {
@@ -30,5 +30,10 @@
       "name": "Joseph Maarek",
       "email": "josephmaarek@gmail.com"
     }
-  ]
+  ],
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }

@@ -17,7 +17,7 @@ abstract class AbstractHandler implements HandlerInterface
      *
      * @param string[]|string $acceptedCommandClasses
      */
-    public function __construct(array | string $acceptedCommandClasses)
+    public function __construct(array|string $acceptedCommandClasses)
     {
         $this->acceptedCommandClasses = (array) $acceptedCommandClasses;
     }
@@ -38,8 +38,7 @@ abstract class AbstractHandler implements HandlerInterface
 
     public function handle(CommandInterface $command): void
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @psalm-suppress UndefinedMethod */
+        // @phpstan-ignore-next-line
         $this->handleCommand($command);
     }
 }

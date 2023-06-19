@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace JmvDevelop\Domain\Logger\Annotation;
 
-/**
- * @Annotation
- * @Target({"CLASS"})
- */
+#[\Attribute(\Attribute::TARGET_CLASS)]
 class LogMessage
 {
-    public string $expression = '';
+    public function __construct(public readonly string $expression)
+    {
+    }
 }

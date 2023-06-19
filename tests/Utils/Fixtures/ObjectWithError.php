@@ -7,12 +7,10 @@ namespace JmvDevelop\Domain\Tests\Utils\Fixtures;
 use JmvDevelop\Domain\Logger\Annotation\LogFields;
 use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 
-/**
- * @LogMessage(expression="'object_with_error'")
- */
+#[LogMessage(expression: "'object_with_error'")]
 class ObjectWithError
 {
-    /** @LogFields(fields={"field1", "erroronpath.field1"}) */
+    #[LogFields(fields: ['field1', 'erroronpath.field1'])]
     protected ?ObjectWithNested $object;
 
     protected string $field1;

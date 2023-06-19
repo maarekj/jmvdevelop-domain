@@ -9,7 +9,6 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 
 class ExpressionLanguageProvider implements ExpressionFunctionProviderInterface
 {
-    /** {@inheritdoc} */
     public function getFunctions()
     {
         return [

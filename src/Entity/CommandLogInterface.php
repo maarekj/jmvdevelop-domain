@@ -14,6 +14,7 @@ interface CommandLogInterface
 
     public static function getLabelForType(int $type): string;
 
+    /** @return array<string, BaseCommandLog::TYPE_*> */
     public static function getChoicesForType(): array;
 
     public function getId(): ?int;
@@ -22,7 +23,7 @@ interface CommandLogInterface
 
     public function getPreviousCommandLog(): ?self;
 
-    public function setPreviousCommandLog(?self $previousCommandLog = null): void;
+    public function setPreviousCommandLog(self $previousCommandLog = null): void;
 
     public function getSessionId(): ?string;
 
@@ -38,8 +39,10 @@ interface CommandLogInterface
 
     public function setMessage(?string $message): void;
 
+    /** @return array<string, mixed>|null */
     public function getCommandData(): ?array;
 
+    /** @param array<string, mixed>|null $commandData */
     public function setCommandData(?array $commandData): void;
 
     public function getCommandClass(): ?string;
@@ -52,11 +55,12 @@ interface CommandLogInterface
 
     public function getDate(): \DateTimeImmutable;
 
+    /** @return array<string, mixed>|null */
     public function getRequest(): ?array;
 
-    public function setRequest(?Request $request = null): void;
+    public function setRequest(Request $request = null): void;
 
-    public function setException(?\Throwable $exception = null): void;
+    public function setException(\Throwable $exception = null): void;
 
     public function getRequestId(): ?string;
 
@@ -86,7 +90,9 @@ interface CommandLogInterface
 
     public function setExceptionClass(?string $exceptionClass): void;
 
+    /** @return array<string, mixed>|null */
     public function getExceptionData(): ?array;
 
+    /** @param array<string, mixed>|null $exceptionData */
     public function setExceptionData(?array $exceptionData): void;
 }

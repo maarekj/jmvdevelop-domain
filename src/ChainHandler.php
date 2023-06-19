@@ -9,7 +9,7 @@ use JmvDevelop\Domain\Exception\UnhandledException;
 class ChainHandler implements HandlerInterface
 {
     /** @var list<HandlerInterface> */
-    private iterable $handlers;
+    private array $handlers;
 
     /** @param \Traversable<array-key, HandlerInterface> $handlers */
     public function __construct(\Traversable $handlers)

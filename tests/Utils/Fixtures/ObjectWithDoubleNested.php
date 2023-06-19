@@ -7,12 +7,10 @@ namespace JmvDevelop\Domain\Tests\Utils\Fixtures;
 use JmvDevelop\Domain\Logger\Annotation\LogFields;
 use JmvDevelop\Domain\Logger\Annotation\LogMessage;
 
-/**
- * @LogMessage(expression="'object_with_double_nested'")
- */
+#[LogMessage(expression: "'object_with_double_nested'")]
 class ObjectWithDoubleNested
 {
-    /** @LogFields(fields={"field1", "simpleObject.field1"}) */
+    #[LogFields(fields: ['field1', 'simpleObject.field1'])]
     protected ?ObjectWithNested $object;
 
     protected string $field1;

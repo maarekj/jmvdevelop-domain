@@ -53,7 +53,7 @@ final class LogHandler implements HandlerInterface
                 $this->logCommand($command, CommandLogInterface::TYPE_AFTER_HANDLER, $commandLog);
             } catch (\Throwable $e) {
                 $this->logCommand($command, CommandLogInterface::TYPE_EXCEPTION, $commandLog, $e);
-                throw ($e instanceof \Exception ? $e : new \RuntimeException($e->getMessage(), (int) $e->getCode(), $e));
+                throw $e instanceof \Exception ? $e : new \RuntimeException($e->getMessage(), (int) $e->getCode(), $e);
             }
         }
     }

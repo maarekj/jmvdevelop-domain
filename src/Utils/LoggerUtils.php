@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace JmvDevelop\Domain\Utils;
 
-use Doctrine\Common\Annotations\Reader;
 use JmvDevelop\Domain\Logger\Annotation\LogCollectionFields;
 use JmvDevelop\Domain\Logger\Annotation\LogFields;
 use JmvDevelop\Domain\Logger\Annotation\LogMessage;
@@ -16,11 +15,10 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class LoggerUtils
 {
-    private PropertyAccessor $propertyAccessor;
-    private ExpressionLanguage $expressionLanguage;
+    private readonly PropertyAccessor $propertyAccessor;
+    private readonly ExpressionLanguage $expressionLanguage;
 
     public function __construct(
-        private Reader $annotationReader,
         CacheItemPoolInterface $cacheAdapter,
         ExpressionLanguageProvider $languageProvider
     ) {
@@ -28,17 +26,19 @@ class LoggerUtils
         $this->expressionLanguage = new ExpressionLanguage($cacheAdapter, [$languageProvider]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function logCommand(object $command): array
     {
         $class = new \ReflectionClass($command);
         $array = [];
 
         foreach ($this->getAllProperties($class) as $property) {
-            $logFieldsAnnot = $this->annotationReader->getPropertyAnnotation($property, LogFields::class);
-            $logCollectionFieldsAnnot = $this->annotationReader->getPropertyAnnotation($property, LogCollectionFields::class);
+            $logFieldsAnnot = $this->getFirstAttribute($property, LogFields::class)?->newInstance();
+            $logCollectionFieldsAnnot = $this->getFirstAttribute($property, LogCollectionFields::class)?->newInstance();
 
             if (null !== $logFieldsAnnot) {
-                /** @psalm-suppress MixedAssignment */
                 $object = $this->getValue($command, $property);
                 if (null === $object) {
                     $array[$property->getName()] = null;
@@ -46,11 +46,9 @@ class LoggerUtils
                     $array[$property->getName()] = $this->logFields($object, $logFieldsAnnot->fields);
                 }
             } elseif (null !== $logCollectionFieldsAnnot) {
-                /** @psalm-suppress MixedAssignment */
                 $collection = $this->getValue($command, $property);
                 $row = [];
                 if (null !== $collection && ($collection instanceof \Traversable || \is_array($collection))) {
-                    /** @psalm-suppress MixedAssignment */
                     foreach ($collection as $object) {
                         if (\is_array($object) || \is_object($object)) {
                             $row[] = $this->logFields($object, $logCollectionFieldsAnnot->fields);
@@ -59,17 +57,17 @@ class LoggerUtils
                 }
                 $array[$property->getName()] = $row;
             } else {
-                /** @psalm-suppress MixedAssignment */
                 $array[$property->getName()] = $this->logValue($command, $property);
             }
         }
 
-        $logMessageAnnot = $this->annotationReader->getClassAnnotation($class, LogMessage::class);
+        $logMessageAnnot = $this->getFirstAttribute($class, LogMessage::class)?->newInstance();
         if (null !== $logMessageAnnot) {
             try {
-                $array['__command_message__'] = (string) $this->expressionLanguage->evaluate($logMessageAnnot->expression, [
+                $commandMessage = $this->expressionLanguage->evaluate($logMessageAnnot->expression, [
                     'o' => $command,
                 ]);
+                $array['__command_message__'] = \is_string($commandMessage) ? $commandMessage : (is_numeric($commandMessage) ? (string) $commandMessage : '');
             } catch (\Exception $e) {
             }
         }
@@ -78,6 +76,8 @@ class LoggerUtils
     }
 
     /**
+     * @param \ReflectionClass<object> $class
+     *
      * @return list<\ReflectionProperty>
      */
     protected function getAllProperties(\ReflectionClass $class): array
@@ -92,9 +92,12 @@ class LoggerUtils
     }
 
     /**
-     * @param string[] $fields
+     * @param mixed[]|object $object
+     * @param string[]       $fields
+     *
+     * @return mixed[]
      */
-    protected function logFields(array | object $object, array $fields): array
+    protected function logFields(array|object $object, array $fields): array
     {
         $array = [];
 
@@ -106,7 +109,8 @@ class LoggerUtils
         return $array;
     }
 
-    protected function logValue(array | object $object, string | \ReflectionProperty $property): mixed
+    /** @param mixed[]|object $object */
+    protected function logValue(array|object $object, string|\ReflectionProperty $property): mixed
     {
         /** @psalm-suppress MixedAssignment */
         $value = $this->getValue($object, $property);
@@ -119,7 +123,8 @@ class LoggerUtils
         return $value;
     }
 
-    protected function getValue(array | object $object, string | \ReflectionProperty $property): mixed
+    /** @param mixed[]|object $object */
+    protected function getValue(array|object $object, string|\ReflectionProperty $property): mixed
     {
         $property = \is_string($property) ? $property : $property->getName();
 
@@ -128,5 +133,21 @@ class LoggerUtils
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param \ReflectionProperty|\ReflectionClass<object> $refl
+     * @param class-string<T>                              $name
+     *
+     * @return \ReflectionAttribute<T>|null
+     */
+    private function getFirstAttribute(\ReflectionProperty|\ReflectionClass $refl, string $name): null|object
+    {
+        $attributes = $refl->getAttributes($name);
+        $attr = reset($attributes);
+
+        return false === $attr ? null : $attr;
     }
 }

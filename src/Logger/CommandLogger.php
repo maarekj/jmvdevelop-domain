@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace JmvDevelop\Domain\Logger;
 
-use Doctrine\Common\Annotations\Reader;
 use JmvDevelop\Domain\CommandInterface;
 use JmvDevelop\Domain\CommandLoggerInterface;
 use JmvDevelop\Domain\Logger\Annotation\CommandLogger as CommandLoggerAnnotation;
@@ -14,33 +13,33 @@ use Psr\Container\ContainerInterface;
 class CommandLogger implements CommandLoggerInterface
 {
     public function __construct(
-        private ContainerInterface $container,
-        private Reader $annotationReader,
-        private CommandLoggerInterface $loggerFallback
+        private readonly ContainerInterface $container,
+        private readonly CommandLoggerInterface $loggerFallback
     ) {
     }
 
     public function mustLog(CommandInterface $command): bool
     {
         $refClass = new \ReflectionClass($command);
+        $annotations = $refClass->getAttributes(NotLog::class);
 
-        $annotation = $this->annotationReader->getClassAnnotation($refClass, NotLog::class);
-
-        return null === $annotation;
+        return 0 === \count($annotations);
     }
 
+    /** @return array<string, mixed> */
     public function log(CommandInterface $command): array
     {
         $refClass = new \ReflectionClass($command);
 
-        $annotation = $this->annotationReader->getClassAnnotation($refClass, CommandLoggerAnnotation::class);
-        if (null == $annotation) {
+        $annotations = $refClass->getAttributes(CommandLoggerAnnotation::class);
+        $annotation = reset($annotations);
+        if (false === $annotation) {
             $logger = $this->loggerFallback;
         } else {
-            /** @psalm-suppress MixedAssignment */
-            $logger = $this->container->get($annotation->service);
+            $instance = $annotation->newInstance();
+            $logger = $this->container->get($instance->service);
             if (!($logger instanceof CommandLoggerInterface)) {
-                throw new \InvalidArgumentException(sprintf('"%s" must be implement %s', $annotation->service, CommandLoggerInterface::class));
+                throw new \InvalidArgumentException(sprintf('"%s" must be implement %s', $instance->service, CommandLoggerInterface::class));
             }
         }
 

@@ -1,0 +1,16 @@
+includes:
+
+parameters:
+    #editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+
+    level: 9
+
+    paths:
+        - src
+
+    excludePaths:
+
+    ignoreErrors:
+        #- "#Constructor of class .* has an unused parameter .*\\.#"
+
+    checkImplicitMixed: true

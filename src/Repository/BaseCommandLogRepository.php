@@ -16,25 +16,30 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @template T as CommandLogInterface
+ *
  * @extends EntityRepository<T>
  */
 abstract class BaseCommandLogRepository extends EntityRepository implements CommandLogRepositoryInterface
 {
     protected ?string $uniqueId = null;
 
+    /**
+     * @param class-string<T> $entityClass
+     */
     public function __construct(
         EntityManagerInterface $manager,
         string $entityClass,
-        private CommandLoggerInterface $commandLogger,
-        private RequestStack $requestStack,
-        private TokenStorageInterface $tokenStorage
+        private readonly CommandLoggerInterface $commandLogger,
+        private readonly RequestStack $requestStack,
+        private readonly TokenStorageInterface $tokenStorage
     ) {
+        // @phpstan-ignore-next-line
         parent::__construct($manager, $manager->getClassMetadata($entityClass));
         $this->uniqueId = null;
     }
 
     /** @param CommandLogInterface::TYPE_* $type */
-    public function createEntity(CommandInterface $command, int $type, ?CommandLogInterface $previousCommandLog = null, ?\Throwable $exception = null): CommandLogInterface
+    public function createEntity(CommandInterface $command, int $type, CommandLogInterface $previousCommandLog = null, \Throwable $exception = null): CommandLogInterface
     {
         $entity = $this->newInstance();
 
@@ -43,7 +48,7 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
 
         $entity->setCommandData($this->commandLogger->log($command));
 
-        $entity->setCommandClass(\get_class($command));
+        $entity->setCommandClass($command::class);
         $entity->setRequest($this->requestStack->getMainRequest());
         $entity->setCurrentUsername($this->getCurrentUsername());
 
@@ -67,14 +72,17 @@ abstract class BaseCommandLogRepository extends EntityRepository implements Comm
         $qb->select('command_log.commandClass')->distinct();
         $results = $qb->getQuery()->getScalarResult();
 
-        return array_values(array_map(function (array $row): string {
-            /** @psalm-suppress MixedAssignment */
-            $value = $row['commandClass'] ?? null;
-            if (null === $value || !\is_string($value)) {
-                return '';
-            } else {
-                return $value;
+        return array_values(array_map(function (mixed $row): string {
+            if (\is_array($row)) {
+                $value = $row['commandClass'] ?? null;
+                if (!\is_string($value)) {
+                    return '';
+                } else {
+                    return $value;
+                }
             }
+
+            return '';
         }, $results));
     }
 

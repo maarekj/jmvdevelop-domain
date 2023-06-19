@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace JmvDevelop\Domain\Logger\Annotation;
 
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD"})
- */
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class LogCollectionFields
 {
     /** @var string[] */
